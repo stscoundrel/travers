@@ -1,3 +1,3 @@
-# Go Template
+# Travers
 
-Template repo for generic Go module with CI
+Monitor certain firearms exercises on a certain island
