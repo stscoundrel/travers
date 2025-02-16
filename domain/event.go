@@ -1,4 +1,4 @@
-package events
+package domain
 
 import "time"
 
@@ -8,8 +8,4 @@ type Event struct {
 	Location  string
 	StartTime time.Time
 	EndTime   time.Time
-}
-
-type EventSource interface {
-	FetchEvents() ([]Event, error)
 }
