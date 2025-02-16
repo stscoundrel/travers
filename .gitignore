@@ -15,3 +15,7 @@
 # vendor/
 /service-account.json
 .DS_Store
+/terraform.tfstate.backup
+/terraform.tfstate
+/.terraform
+/function-source.zip

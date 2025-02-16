@@ -50,6 +50,8 @@ func FetchAndStoreEvents(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("\n📌 No new events found.")
 	}
 
+	fmt.Fprint(w, "Irrelevant response")
+
 }
 
 func printEvents(events []domain.Event) {

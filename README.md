@@ -4,6 +4,24 @@ Monitor certain firearms exercises on a certain island.
 
 Work in progress for personal use.
 
+### Deploy
+
+To hook up the cloud infra with Terraform:
+
+- Manually zip latest src version to `function-source.zip`. To be automated.
+- Populate `service-account.json` with credentials from Cloud Console.
+- `terraform plan` /  `terraform apply`
+  
+Currently Terraform host state locally.
+
+Presently creates:
+- Cloud function to run Travers
+- Event Scheduler action to trigger it daily.
+- Required storage buckets & permissions.
+
+To be added:
+- Cloud Storage for events.
+- Messaging on new events.
 
 ### Whats in the name?
 
