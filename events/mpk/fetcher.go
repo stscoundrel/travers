@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/stscoundrel/travers/events"
+	"github.com/stscoundrel/travers/domain"
 )
 
-func fetchEvents(params MPKQueryParams) ([]events.Event, error) {
+func fetchEvents(params MPKQueryParams) ([]domain.Event, error) {
 	url := buildURL(params)
 
 	resp, err := http.Get(url)
@@ -26,13 +26,13 @@ func fetchEvents(params MPKQueryParams) ([]events.Event, error) {
 	return mapToDomainEvents(rawEvents)
 }
 
-func mapToDomainEvents(rawEvents []rawMPKEvent) ([]events.Event, error) {
-	var eventsList []events.Event
+func mapToDomainEvents(rawEvents []rawMPKEvent) ([]domain.Event, error) {
+	var eventsList []domain.Event
 	for _, raw := range rawEvents {
 		startTime, _ := parseTimeString(raw.AlkuaikaStr)
 		endTime, _ := parseTimeString(raw.LoppuaikaStr)
 
-		eventsList = append(eventsList, events.Event{
+		eventsList = append(eventsList, domain.Event{
 			ID:        raw.TapahtumaID,
 			Name:      raw.Nimi,
 			Location:  raw.Sijainti,
