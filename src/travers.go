@@ -1,30 +1,42 @@
-package main
+package travers
 
 import (
 	"fmt"
 	"log"
 	"time"
 
+	"net/http"
+
 	"github.com/stscoundrel/travers/domain"
 	"github.com/stscoundrel/travers/events"
 	"github.com/stscoundrel/travers/events/mpk"
 	"github.com/stscoundrel/travers/storage"
+
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 )
 
-func main() {
+var eventService *events.EventService
+
+func init() {
 	// Local repository implementation.
+	// TODO: cloud storage.
 	repo := storage.NewFileRepository("events.json")
 
-	// Singular Santahamina data source.
+	// Santahamina data source.
 	santahaminaFetcher := mpk.NewMPKEventSource(mpk.MPKQueryParams{
 		UnitID:    mpk.UnitHelsinki,
 		StartDate: time.Now(),
 		EndDate:   time.Now().AddDate(1, 0, 0), // +1 year.
 	})
 
-	eventService := events.NewEventService(repo, santahaminaFetcher)
+	eventService = events.NewEventService(repo, santahaminaFetcher)
 
-	// Fetch and store new events
+	// Hook up the cloud function.
+	functions.HTTP("FetchAndStoreEvents", FetchAndStoreEvents)
+}
+
+// Cloud function entry point.
+func FetchAndStoreEvents(w http.ResponseWriter, r *http.Request) {
 	newEvents, err := eventService.FetchAndStoreNewEvents()
 	if err != nil {
 		log.Fatal("Error processing events:", err)
