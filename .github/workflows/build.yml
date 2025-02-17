@@ -2,12 +2,16 @@ name: Go - Build
 
 on: [pull_request]
 
+defaults:
+  run:
+    working-directory: src
+
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: ['1.23.x']
+        go: ['1.22.x', '1.23.x']
     steps:
       - uses: actions/checkout@v4
       - name: Build with Go ${{ matrix.go }}
