@@ -1,6 +1,8 @@
 package events
 
 import (
+	"log"
+
 	"github.com/stscoundrel/travers/domain"
 	"github.com/stscoundrel/travers/storage"
 )
@@ -34,19 +36,23 @@ func (s *EventService) GetAllEvents() ([]domain.Event, error) {
 }
 
 func (s *EventService) FetchAndStoreNewEvents() ([]domain.Event, error) {
+	log.Printf("Fetching events")
 	freshEvents, err := s.GetAllEvents()
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("%d total events found via fetchers.", len(freshEvents))
 
-	// Identify new events
+	log.Printf("Checking if events are new.")
 	newEvents, err := s.repository.GetNewEvents(freshEvents)
 	if err != nil {
 		return nil, err
 	}
 
-	// Store only new events
+	log.Printf("%d new events found.", len(newEvents))
+
 	if len(newEvents) > 0 {
+		log.Printf("Storing new events")
 		err = s.repository.SaveEvents(newEvents)
 		if err != nil {
 			return nil, err

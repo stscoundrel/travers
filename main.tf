@@ -18,7 +18,10 @@ resource "google_cloudfunctions2_function" "event_fetcher" {
   name        = "event-fetcher"
   location    = var.region
   description = "Fetches and stores new events"
-  depends_on = [google_storage_bucket_object.function_zip]
+  depends_on = [
+    google_storage_bucket_object.function_zip,
+    google_storage_bucket_iam_member.cloud_function_gcs_access
+  ]
 
   build_config {
     runtime     = "go122"
@@ -36,6 +39,9 @@ resource "google_cloudfunctions2_function" "event_fetcher" {
     available_memory   = "256Mi"
     timeout_seconds    = 60
     service_account_email = google_service_account.service_account.email
+    environment_variables = {
+      EVENT_STORAGE_BUCKET = google_storage_bucket.event_data_bucket.name
+    }
   }
 }
 
@@ -69,14 +75,21 @@ resource "google_service_account_iam_member" "allow_scheduler" {
 resource "google_cloud_scheduler_job" "daily_event_fetch" {
   name        = "daily-event-fetch"
   description = "Runs event fetcher daily"
-  schedule    = "20 14 * * *" # Runs at given UTC every day
+  schedule    = "45 16 * * *" # Runs at given UTC every day
   time_zone   = "UTC"
+  depends_on = [
+    google_cloudfunctions2_function.event_fetcher,
+    google_cloudfunctions2_function_iam_member.invoke,
+    google_cloud_run_service_iam_member.cloud_run_invoker,
+    google_service_account_iam_member.allow_scheduler,
+  ]
 
   http_target {
     uri         = google_cloudfunctions2_function.event_fetcher.service_config[0].uri
     http_method = "GET"
 
     oidc_token {
+      audience              = google_cloudfunctions2_function.event_fetcher.service_config[0].uri
       service_account_email = google_service_account.service_account.email
     }
   }
@@ -95,6 +108,20 @@ resource "google_storage_bucket_object" "function_zip" {
   bucket = google_storage_bucket.source_bucket.name
   source = "function-source.zip"
   depends_on = [google_storage_bucket.source_bucket]
+}
+
+# Bucket to store event data.
+resource "google_storage_bucket" "event_data_bucket" {
+  name          = "${var.project_id}-events"
+  location      = var.region
+  force_destroy = true
+}
+
+# Access bucket with service account.
+resource "google_storage_bucket_iam_member" "cloud_function_gcs_access" {
+  bucket = google_storage_bucket.event_data_bucket.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.service_account.email}"
 }
 
 # Fetch project data dynamically to reference project_number
