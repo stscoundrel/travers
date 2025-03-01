@@ -16,11 +16,11 @@ Currently Terraform host state locally.
 
 Presently creates:
 - Cloud function to run Travers
-- Event Scheduler action to trigger it daily.
-- Required storage buckets & permissions.
+- Event Scheduler action to trigger it daily
+- Storage bucket for event data storage
+- Required storage buckets & permissions
 
 To be added:
-- Cloud Storage for events.
 - Messaging on new events.
 
 ### Whats in the name?
