@@ -124,5 +124,54 @@ resource "google_storage_bucket_iam_member" "cloud_function_gcs_access" {
   member = "serviceAccount:${google_service_account.service_account.email}"
 }
 
+
+# Notification condition.
+resource "google_logging_metric" "event_alert_metric" {
+  name   = "event_alert_metric"
+  filter = "textPayload =~ \"Travers found new events\""
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "INT64"
+  }
+}
+
+# Notification channel.
+resource "google_monitoring_notification_channel" "email_alert" {
+  display_name = "Travers Notification"
+  type         = "email"
+  labels = {
+    email_address = var.alert_email
+  }
+}
+
+# Notification policy.
+resource "google_monitoring_alert_policy" "event_alert_policy" {
+  display_name = "Travers Event Alert"
+  documentation {
+    subject = "Travers found new events"
+  }
+  combiner     = "OR"
+  depends_on = [google_logging_metric.event_alert_metric]
+
+  conditions {
+    display_name = "Event Log Condition"
+    condition_threshold {
+      filter          = "resource.type=\"metric\" AND metric.type=\"logging.googleapis.com/user/event_alert_metric\""
+      duration        = "0s"
+      comparison      = "COMPARISON_GT"
+      threshold_value = 0
+      aggregations {
+        alignment_period   = "60s"
+        per_series_aligner = "ALIGN_COUNT"
+      }
+      trigger {
+        count = 1
+      }
+    }
+  }
+
+  notification_channels = [google_monitoring_notification_channel.email_alert.id]
+}
+
 # Fetch project data dynamically to reference project_number
 data "google_project" "project" {}
