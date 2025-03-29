@@ -70,8 +70,9 @@ func FetchAndStoreEvents(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(newEvents) > 0 {
-		log.Printf("%d new events found.", len(newEvents))
-		response.Message = fmt.Sprintf("%d new events found.", len(newEvents))
+		log.Printf("Found %d new events.", len(newEvents))
+		log.Printf("Travers found new events.")
+		response.Message = fmt.Sprintf("Travers found %d new events.", len(newEvents))
 		response.Events = newEvents
 	}
 
