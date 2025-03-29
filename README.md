@@ -1,14 +1,16 @@
 # Travers
 
-Monitor certain firearms exercises on a certain island.
+Monitor certain firearms exercises on a certain island. When new events are detected, sends alert to sign up.
 
-Work in progress for personal use.
+### Why though?
+
+For personal use to avoid manual hassle of checking when new signup become available. The events it monitors tend to be popular and available slots limited, so it helps to know when new ones are published.
 
 ### Deploy
 
 To hook up the cloud infra with Terraform:
 
-- Manually zip latest src version to `function-source.zip`. To be automated.
+- Manually zip latest src version to `function-source.zip`.
 - Populate `service-account.json` with credentials from Cloud Console.
 - `terraform plan` /  `terraform apply`
   
@@ -19,10 +21,8 @@ Presently creates:
 - Event Scheduler action to trigger it daily
 - Storage bucket for event data storage
 - Required storage buckets & permissions
-
-To be added:
-- Messaging on new events.
+- Messaging events for alerts.
 
 ### Whats in the name?
 
-One meaning of _Travers_ is _someone who lives at a crossing place_. To get to activities which this Travers monitors, you'll have to cross body of water and some other things.
+One meaning of *Travers* is "_someone who lives at a crossing place_". To get to activities which this Travers monitors, you'll have to cross body of water and some other things.
