@@ -156,9 +156,7 @@ resource "google_monitoring_alert_policy" "event_alert_policy" {
   conditions {
     display_name = "Event Log Condition"
     condition_threshold {
-      # NOTE: following line does not work correctly. The resource type should be omitted, but API required it. 
-      # As temporary workaround, remove the resource.type in console after deploy.
-      filter          = "resource.type=\"metric\" AND metric.type=\"logging.googleapis.com/user/event_alert_metric\""
+      filter          = "metric.type=\"logging.googleapis.com/user/event_alert_metric\" AND resource.type=\"cloud_run_revision\""
       duration        = "0s"
       comparison      = "COMPARISON_GT"
       threshold_value = 0
