@@ -1,3 +1,5 @@
+(Archived: the API this project was based on is not available anymore)
+
 # Travers
 
 Monitor certain firearms exercises on a certain island. When new events are detected, sends alert to sign up.
